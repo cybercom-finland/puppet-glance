@@ -511,6 +511,8 @@ class glance::api(
     } else {
       $service_ensure = 'stopped'
     }
+  } else {
+    $service_ensure = undef
   }
 
   service { 'glance-api':
