@@ -406,10 +406,10 @@ class glance::api(
   } elsif $known_stores {
     warning('The known_stores parameter is deprecated, use stores instead')
     $stores_real = $known_stores
+  } else {
+    $stores_real = undef
   }
-  if $default_store {
-    $default_store_real = $default_store
-  }
+
   if !empty($stores_real) {
     # determine value for glance_store/stores
     if size(any2array($stores_real)) > 1 {
@@ -417,16 +417,19 @@ class glance::api(
     } else {
       $final_stores_real = $stores_real[0]
     }
-    if !$default_store_real {
+    if !$default_store {
       # set default store based on provided stores when it isn't explicitly set
       warning("default_store not provided, it will be automatically set to ${stores_real[0]}")
       $default_store_real = $stores_real[0]
     }
-  } elsif $default_store_real {
+  } elsif $default_store {
     # set stores based on default_store if only default_store is provided
     $final_stores_real = $default_store
+    $default_store_real = $default_store
   } else {
     warning('Glance-api is being provisioned without any stores configured')
+    $final_stores_real = undef
+    $default_store_real = undef
   }
 
   if $default_store_real and $multi_store {
